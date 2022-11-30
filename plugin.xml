@@ -18,6 +18,10 @@
 
   <platform name="android">
 
+    <js-module src="www/MessagingCenter.js" name="messagingCenter">
+      <clobbers target="MessagingCenter" />
+    </js-module>
+
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="MessagingCenter">
         <param name="android-package" value="com.polarts.messagingcenter" />
@@ -29,6 +33,10 @@
   </platform>
 
   <platform name="ios">
+
+    <js-module src="www/MessagingCenter.js" name="messagingCenter">
+      <clobbers target="MessagingCenter" />
+    </js-module>
 
     <config-file target="config.xml" parent="/widget">
       <feature name="MessagingCenter">
