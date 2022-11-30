@@ -1,0 +1,31 @@
+{
+  "name": "cordova-plugin-messaging-center",
+  "version": "0.0.1",
+  "description": "Pub-sub communication between platforms",
+  "cordova": {
+    "id": "cordova-plugin-messaging-center",
+    "platforms": [
+      "android",
+      "ios",
+      "browser"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Polarts/cordova-plugin-messaging-center.git"
+  },
+  "keywords": [
+    "cordova",
+    "plugin",
+    "messaging",
+    "center",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "David Klein a.k.a Polarts",
+  "license": "Apache-2",
+  "bugs": {
+    "url": "https://github.com/Polarts/cordova-plugin-messaging-center/issues"
+  },
+  "homepage": "https://github.com/Polarts/cordova-plugin-messaging-center#readme"
+}
