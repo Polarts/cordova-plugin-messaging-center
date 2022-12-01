@@ -1,5 +1,7 @@
 package com.polarts.messagingcenter;
 
+import android.util.Log;
+
 import java.util.*;
 import java.util.function.*;
 
