@@ -8,6 +8,8 @@ import org.json.*;
 
 public class MessagingCenter extends CordovaPlugin {
 
+    private static String TAG = "MessagingCenter";
+
     private static class MessageSubscription {
         public CallbackContext callback;
         public String id;
@@ -20,6 +22,13 @@ public class MessagingCenter extends CordovaPlugin {
     private static int subscriptionIdCounter = 0;
 
     private static Map<String, ArrayList<MessageSubscription>> subscriptions = new HashMap<>();
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+
+        Log.d(TAG, "Initializing " + TAG);
+    }
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
@@ -58,6 +67,7 @@ public class MessagingCenter extends CordovaPlugin {
             subscriptions.put(topic, subs);
         }
         subs.add(new MessageSubscription(id, callbackContext));
+        Log.d(TAG, "Subscribed to " + id);
         return id;
     }
 
