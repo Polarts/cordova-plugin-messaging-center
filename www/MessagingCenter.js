@@ -1,4 +1,3 @@
-var cordova = require('cordova');
 const SERVICE_NAME = "MessagingService";
 var subscriptionIdCounter = 0;
 
