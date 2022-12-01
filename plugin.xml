@@ -28,7 +28,7 @@
       </feature>
     </config-file>
 
-    <source-file src="src/android/com/polarts/messagingcenter/MessagingCenter.java" target-dir="src/com/polarts/messagingCenter/" />
+    <source-file src="src/android/com/polarts/messagingcenter/MessagingCenter.java" target-dir="src/com/polarts/messagingcenter/" />
 
   </platform>
 
