@@ -1,4 +1,4 @@
-const SERVICE_NAME = "MessagingService";
+const SERVICE_NAME = "MessagingCenter";
 var subscriptionIdCounter = 0;
 
 class MessagingCenter {
