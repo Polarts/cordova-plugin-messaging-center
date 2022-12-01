@@ -12,14 +12,14 @@
     <engine name="cordova" version=">=5.0.0" />
   </engines>
 
-  <js-module src="www/MessagingCenter.js" name="messagingCenter">
-    <clobbers target="MessagingCenter" />
+  <js-module src="www/MessagingCenter.js" name="MessagingCenter">
+    <clobbers target="cordova.plugins.messagingCenter" />
   </js-module>
 
   <platform name="android">
 
-    <js-module src="www/MessagingCenter.js" name="messagingCenter">
-      <clobbers target="MessagingCenter" />
+    <js-module src="www/MessagingCenter.js" name="MessagingCenter">
+      <clobbers target="cordova.plugins.messagingCenter" />
     </js-module>
 
     <config-file target="res/xml/config.xml" parent="/*">
@@ -34,8 +34,8 @@
 
   <platform name="ios">
 
-    <js-module src="www/MessagingCenter.js" name="messagingCenter">
-      <clobbers target="MessagingCenter" />
+    <js-module src="www/MessagingCenter.js" name="MessagingCenter">
+      <clobbers target="cordova.plugins.messagingCenter" />
     </js-module>
 
     <config-file target="config.xml" parent="/widget">
@@ -51,8 +51,8 @@
 
   <platform name="browser">
 
-    <js-module src="www/MessagingCenter.js" name="messagingCenter">
-      <clobbers target="MessagingCenter" />
+    <js-module src="www/MessagingCenter.js" name="MessagingCenter">
+      <clobbers target="cordova.plugins.messagingCenter" />
     </js-module>
 
   </platform>

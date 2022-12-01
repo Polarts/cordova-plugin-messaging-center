@@ -8,7 +8,7 @@ import org.json.*;
 
 public class MessagingCenter extends CordovaPlugin {
 
-    private class MessageSubscription {
+    private static class MessageSubscription {
         public CallbackContext callback;
         public String id;
         public MessageSubscription(String id, CallbackContext callback) {
@@ -19,7 +19,7 @@ public class MessagingCenter extends CordovaPlugin {
 
     private static int subscriptionIdCounter = 0;
 
-    private Map<String, ArrayList<MessageSubscription>> subscriptions = new Map<String, ArrayList<MessageSubscription>>();
+    private static Map<String, ArrayList<MessageSubscription>> subscriptions = new HashMap<>();
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
@@ -29,15 +29,18 @@ public class MessagingCenter extends CordovaPlugin {
         switch(action) {
             case "subscribe":
                 this.subscribe(topic, callbackContext);
-            break;
+                return true;
 
             case "unsubscribe":
                 this.unsubscribe(topic, data.getString(1));
-            break;
+                return true;
 
             case "publish":
-                this.publish(topic, data.getJsonObject(1));
-            break;
+                this.publish(topic, data.getJSONObject(1));
+                return true;
+
+            default:
+                return false;
         }
     }
 
@@ -47,7 +50,7 @@ public class MessagingCenter extends CordovaPlugin {
      * @param callbackContext override success(JSONObject) for the callback that'd be called
      * @return the subscription ID for unsubscribing
      */
-    public String subscribe(String topic, CallbackContext callbackContext) {
+    public static String subscribe(String topic, CallbackContext callbackContext) {
         ArrayList<MessageSubscription> subs = subscriptions.get(topic);
         String id = "android_" + subscriptionIdCounter;
         if (subs == null) {
@@ -63,7 +66,7 @@ public class MessagingCenter extends CordovaPlugin {
      * @param topic the topic you'd like to unsibscribe from
      * @param id the ID of the specific subscription
      */
-    public void unsubscribe(String topic, String id) {
+    public static void unsubscribe(String topic, String id) {
         ArrayList<MessageSubscription> subs = subscriptions.get(topic);
         if (subs != null) {
             subs.removeIf(new Predicate<MessageSubscription>() {
@@ -80,7 +83,7 @@ public class MessagingCenter extends CordovaPlugin {
      * @param topic the topic you'd like to publish to
      * @param payload the payload you'd like to publish
      */
-    public void publish(String topic, JSONObject payload) {
+    public static void publish(String topic, JSONObject payload) {
         ArrayList<MessageSubscription> subs = subscriptions.get(topic);
         if (subs != null) {
             subs.forEach(new Consumer<MessageSubscription>() {
