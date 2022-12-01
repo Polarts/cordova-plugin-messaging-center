@@ -37,6 +37,7 @@ export class MessagingCenter {
      * @param topic the topic you'd like to publish to
      * @param payload the payload you'd like to publish (must be an object)
      * @param onError callback to handle error
+     * @param preventCordovaExec set this to true if you don't want the publish to execute on cordova's runtime 
      */
     publish: (
         topic: string,

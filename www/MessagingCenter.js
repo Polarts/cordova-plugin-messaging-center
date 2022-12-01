@@ -41,12 +41,15 @@ class MessagingCenter {
      * @param {string} topic the topic you'd like to publish to
      * @param {object} payload the payload you'd like to publish (must be an object)
      * @param {(err: any) => void} onError callback to handle error
+     * @param {boolean} preventCordovaExec set this to true if you don't want the publish to execute on cordova's runtime 
      */
-    publish(topic, payload, onError) {
+    publish(topic, payload, onError, preventCordovaExec) {
         this.subscriptions[topic].forEach(sub => {
             sub.callback(payload);
         });
-        cordova.exec(() => {}, onError, SERVICE_NAME, "publish", [topic, payload]);
+        if (!preventCordovaExec) {
+            cordova.exec(() => {}, onError, SERVICE_NAME, "publish", [topic, payload]);
+        }
     }
 }
 
