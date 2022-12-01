@@ -1,4 +1,5 @@
-const serviceName = "MessagingService";
+var cordova = require('cordova');
+const SERVICE_NAME = "MessagingService";
 var subscriptionIdCounter = 0;
 
 class MessagingCenter {
@@ -21,7 +22,7 @@ class MessagingCenter {
         } 
         this.subscriptions[topic].push(sub);
         subscriptionIdCounter++;
-        cordova.exec(callback, onError, serviceName, "subscribe", [topic]);
+        cordova.exec(callback, onError, SERVICE_NAME, "subscribe", [topic]);
         return sub.id;
     }
 
@@ -33,7 +34,7 @@ class MessagingCenter {
      */
     unsubscribe(topic, id, onError) {
         this.subscriptions[topic] = this.subscriptions[topic].filter(sub => sub.id !== id);
-        cordova.exec(() => {}, onError, serviceName, "unsubscribe", [topic, id]);
+        cordova.exec(() => {}, onError, SERVICE_NAME, "unsubscribe", [topic, id]);
     }
 
     /**
@@ -46,7 +47,7 @@ class MessagingCenter {
         this.subscriptions[topic].forEach(sub => {
             sub.callback(payload);
         });
-        cordova.exec(() => {}, onError, serviceName, "publish", [topic, payload]);
+        cordova.exec(() => {}, onError, SERVICE_NAME, "publish", [topic, payload]);
     }
 }
 
