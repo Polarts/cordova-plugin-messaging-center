@@ -16,10 +16,6 @@ public class MessagingCenter extends CordovaPlugin {
         public void invoke(JSONObject payload);
     }
 
-    private static IPayloadCallback noop = payload -> {
-        // Do nothing
-    };
-
     private static class MessageSubscription {
         public IPayloadCallback callback;
         public String id;
@@ -50,15 +46,6 @@ public class MessagingCenter extends CordovaPlugin {
         String topic = data.getString(0);
 
         switch(action) {
-            case "subscribe":
-                this.subscribe(topic, noop, data.getString(1));
-                callbackContext.success();
-                return true;
-
-            case "unsubscribe":
-                this.unsubscribe(topic, data.getString(1));
-                callbackContext.success();
-                return true;
 
             case "publish":
                 this.publish(topic, data.getJSONObject(1));
@@ -74,22 +61,21 @@ public class MessagingCenter extends CordovaPlugin {
     /**
      * Subscribes to a topic
      * @param topic the topic you'd like to subscribe to
-     * @param callback override success(JSONObject) for the callback that'd be called
-     * @param id an existing id for the subscription (new one is generated if null)
+     * @param callback the callback to be called when there's a publish to this topic
      * @return the subscription ID for unsubscribing
      */
-    public static String subscribe(String topic, IPayloadCallback callback, String id) {
+    public static String subscribe(String topic, IPayloadCallback callback) {
+        // Generate a new Android-specific id
+        String id = "android_" + subscriptionIdCounter;
+        subscriptionIdCounter++;
+        
         ArrayList<MessageSubscription> subs = subscriptions.get(topic);
-        if (id == null) { // if id is null generate a new one
-            id = "android_" + subscriptionIdCounter;
-            subscriptionIdCounter++;
-        }
         if (subs == null) {
             subs = new ArrayList<>();
             subscriptions.put(topic, subs);
         }
         subs.add(new MessageSubscription(id, callback));
-        Log.d(TAG, "Subscribed to " + id);
+        Log.d(TAG, "Subscribed to topic " + topic + " with id " + id);
         return id;
     }
 
@@ -112,16 +98,23 @@ public class MessagingCenter extends CordovaPlugin {
      */
     public static void publish(String topic, JSONObject payload) {
         ArrayList<MessageSubscription> subs = subscriptions.get(topic);
-        if (subs != null) {
-            cordova.getActivity().runOnUiThread(() -> {
+        cordova.getActivity().runOnUiThread(() -> {
+            if (subs != null) {
                 subs.forEach(sub -> {
+                    // Invoke the Android subscriptions
                     sub.callback.invoke(payload);
-                    // Due to Cordova's limitation of being able to call the success callback only once,
-                    // I call the web "publish" function instead via JS injection with the payload stringified.
-                    webView.loadUrl("javascript:window.cordova.plugins.messagingCenter.publish(\""+topic+"\", "+payload.toString()+", () => {}, true)");
                 });
-            });
-        }
+            }
+            // Calls the web counterpart of the "publish" function via JS injection with the payload stringified.
+            // This makes sure all the web subscriptions are triggered as well.
+            webView.loadUrl(
+                "javascript:window.cordova.plugins.messagingCenter.publish("
+                    + "\"" + topic + "\","
+                    + payload.toString() + ","
+                    + "{preventCordovaExec: true}" // prevents infinite loop
+                + ")"
+            );
+        });
     }
 
 }
