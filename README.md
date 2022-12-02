@@ -52,7 +52,7 @@ Android (java):
 MessagingCenter.unsubscribe("myTopic", subscriptionId);
 ```
 
-### Publishing to a topic
+### Publishing to a topic:
 
 Publishing sends the payload accross platforms. Unlike the other functions, `publish` can call `cordova.exec` and thus has the `cordovaParams` with success and error callbacks.
 
