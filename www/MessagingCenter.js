@@ -32,7 +32,9 @@ class MessagingCenter {
      * @param {(err: any) => void} onError callback to handle error
      */
     unsubscribe(topic, id, onError) {
-        this.subscriptions[topic] = this.subscriptions[topic].filter(sub => sub.id !== id);
+        if (topic in this.subscriptions) {
+            this.subscriptions[topic] = this.subscriptions[topic].filter(sub => sub.id !== id);
+        }
         cordova.exec(() => {}, onError, SERVICE_NAME, "unsubscribe", [topic, id]);
     }
 
@@ -44,9 +46,11 @@ class MessagingCenter {
      * @param {boolean} preventCordovaExec set this to true if you don't want the publish to execute on cordova's runtime 
      */
     publish(topic, payload, onError, preventCordovaExec) {
-        this.subscriptions[topic].forEach(sub => {
-            sub.callback(payload);
-        });
+        if (topic in this.subscriptions) {           
+            this.subscriptions[topic].forEach(sub => {
+                sub.callback(payload);
+            });
+        }
         if (!preventCordovaExec) {
             cordova.exec(() => {}, onError, SERVICE_NAME, "publish", [topic, payload]);
         }
