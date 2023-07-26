@@ -34,6 +34,9 @@ class MessagingCenter {
     unsubscribe(topic, id) {
         if (topic in this.subscriptions) {
             this.subscriptions[topic] = this.subscriptions[topic].filter(sub => sub.id !== id);
+            if (this.subscriptions[topic].length == 0) {
+                delete this.subscriptions[topic];
+            }
         }
     }
 
