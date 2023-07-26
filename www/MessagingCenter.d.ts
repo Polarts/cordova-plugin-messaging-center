@@ -22,9 +22,9 @@ export class MessagingCenter {
      * @param callback the callback to be called when there's a publish to this topic
      * @returns the subscription ID for unsubscribing
      */
-    subscribe: (
+    subscribe: <T>(
         topic: string,
-        callback: (payload: object) => void
+        callback: (payload: T) => void
     ) => string;
 
     /**
@@ -43,9 +43,9 @@ export class MessagingCenter {
      * @param payload the payload you'd like to publish (must be an object)
      * @param cordovaParams cordova-related params.
      */
-    publish: (
+    publish: <T>(
         topic: string,
-        payload: object,
+        payload: T,
         cordovaParams?: CordovaParams
     ) => void;
 
