@@ -54,5 +54,15 @@
 
   </platform>
 
+  <platform name="electron">
+
+    <js-module src="www/MessagingCenter.js" name="MessagingCenter">
+      <clobbers target="cordova.plugins.messagingCenter" />
+    </js-module>
+
+    <framework src="src/electron"/>
+    
+  </platform>
+
 
 </plugin>

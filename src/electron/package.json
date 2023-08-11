@@ -1,0 +1,8 @@
+{
+    "name": "cordova-plugin-messaging-center",
+    "version": "0.0.1",
+    "main": "MessagingCenter.js",
+    "cordova": {
+        "serviceName": "MessagingCenter"
+    }
+}

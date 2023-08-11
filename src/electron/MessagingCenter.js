@@ -1,6 +1,8 @@
 const SERVICE_NAME = "MessagingCenter";
 var subscriptionIdCounter = 0;
 
+const { BrowserWindow } = require('electron');
+
 class MessagingCenter {
     subscriptions = {}
 
@@ -11,8 +13,8 @@ class MessagingCenter {
      * @returns the subscription ID for unsubscribing
      */
     subscribe(topic, callback) {
-        // Generate a new Web-specific id
-        const callbackId = `web_${subscriptionIdCounter}`;
+        // Generate a new Electron-specific id
+        const callbackId = `electron_${subscriptionIdCounter}`;
         subscriptionIdCounter++;
 
         const sub = {
@@ -49,18 +51,21 @@ class MessagingCenter {
      * @param cordovaParams.onSuccess callback to handle cordova.exec success
      * @param cordovaParams.onError callback to handle cordova.exec error
      */
-    publish(topic, payload, cordovaParams) {
+     publish(topic, payload, cordovaParams) {
         if (topic in this.subscriptions) {           
             this.subscriptions[topic].forEach(sub => {
-            // Invoke the Web subscriptions
+                // Invoke the Electron subscriptions
                 sub.callback(payload);
             });
         }
         if (!cordovaParams?.preventCordovaExec) {
-            // Calls cordova plugin to invoke platform-specific subscriptions
-            cordova.exec(cordovaParams.onSuccess, cordovaParams.onError, SERVICE_NAME, "publish", [topic, payload]);
+            // Calls the web counterpart of the "publish" function via JS injection with the payload stringified.
+            // This makes sure all the web subscriptions are triggered as well.
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            focusedWindow.loadURL(`
+                javascript:window.cordova.plugins.messagingCenter.publish("${topic}", ${JSON.stringify(payload)}, { preventCordovaExec: true })
+            `)
         }
-
     }
 }
 
