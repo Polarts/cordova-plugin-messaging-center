@@ -4,8 +4,5 @@
     "main": "MessagingCenter.js",
     "cordova": {
         "serviceName": "MessagingCenter"
-    },
-    "dependencies": {
-        "electron": "^22.0.0"
     }
 }

@@ -56,14 +56,9 @@ class MessagingCenter {
                 sub.callback(payload);
             });
         }
-        if (cordovaParams && !cordovaParams.preventCordovaExec) {
+        if (!cordovaParams?.preventCordovaExec) {
             // Calls cordova plugin to invoke platform-specific subscriptions
             cordova.exec(cordovaParams.onSuccess, cordovaParams.onError, SERVICE_NAME, "publish", [topic, payload]);
-       
-            // Electron-specific handling
-            if(window.cordova.platformId === "electron") {
-                window.electronMessagigCenter.invoke({topic, payload});
-            }
         }
 
     }

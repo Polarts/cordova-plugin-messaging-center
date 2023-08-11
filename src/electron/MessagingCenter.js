@@ -1,25 +1,10 @@
 const SERVICE_NAME = "MessagingCenter";
 var subscriptionIdCounter = 0;
 
-const { app, ipcMain, ipcRenderer, contextBridge } = require('electron');
-
-contextBridge.exposeInMainWorld(`electron${SERVICE_NAME}`, {
-    invoke: (msg) => ipcRenderer.invoke(SERVICE_NAME, msg)
-})
+const { BrowserWindow } = require('electron');
 
 class MessagingCenter {
     subscriptions = {}
-
-    constructor() {
-        this.handleElectronMessage = this.handleElectronMessage.bind(this);
-        app.whenReady().then(() => {
-            ipcMain.handle(SERVICE_NAME, this.handleElectronMessage)
-        })
-    }
-
-    handleElectronMessage(_, msg /* {topic: string, payload: T} */) {
-        this.publish(msg.topic, msg.payload, { preventCordovaExec: true });
-    }
 
     /**
      * Subscribes to a topic
@@ -69,13 +54,17 @@ class MessagingCenter {
      publish(topic, payload, cordovaParams) {
         if (topic in this.subscriptions) {           
             this.subscriptions[topic].forEach(sub => {
-            // Invoke the Web subscriptions
+                // Invoke the Electron subscriptions
                 sub.callback(payload);
             });
         }
-        if (cordovaParams && !cordovaParams.preventCordovaExec) {
-            // Calls web subscription
-            ipcMain.invoke(SERVICE_NAME, {topic, payload})
+        if (!cordovaParams?.preventCordovaExec) {
+            // Calls the web counterpart of the "publish" function via JS injection with the payload stringified.
+            // This makes sure all the web subscriptions are triggered as well.
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            focusedWindow.loadURL(`
+                javascript:window.cordova.plugins.messagingCenter.publish("${topic}", ${JSON.stringify(payload)}, { preventCordovaExec: true })
+            `)
         }
     }
 }
