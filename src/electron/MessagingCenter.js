@@ -1,8 +1,25 @@
 const SERVICE_NAME = "MessagingCenter";
 var subscriptionIdCounter = 0;
 
+const { app, ipcMain, ipcRenderer, contextBridge } = require('electron');
+
+contextBridge.exposeInMainWorld(`electron${SERVICE_NAME}`, {
+    invoke: (msg) => ipcRenderer.invoke(SERVICE_NAME, msg)
+})
+
 class MessagingCenter {
     subscriptions = {}
+
+    constructor() {
+        this.handleElectronMessage = this.handleElectronMessage.bind(this);
+        app.whenReady().then(() => {
+            ipcMain.handle(SERVICE_NAME, this.handleElectronMessage)
+        })
+    }
+
+    handleElectronMessage(_, msg /* {topic: string, payload: T} */) {
+        this.publish(msg.topic, msg.payload, { preventCordovaExec: true });
+    }
 
     /**
      * Subscribes to a topic
@@ -11,8 +28,8 @@ class MessagingCenter {
      * @returns the subscription ID for unsubscribing
      */
     subscribe(topic, callback) {
-        // Generate a new Web-specific id
-        const callbackId = `web_${subscriptionIdCounter}`;
+        // Generate a new Electron-specific id
+        const callbackId = `electron_${subscriptionIdCounter}`;
         subscriptionIdCounter++;
 
         const sub = {
@@ -49,7 +66,7 @@ class MessagingCenter {
      * @param cordovaParams.onSuccess callback to handle cordova.exec success
      * @param cordovaParams.onError callback to handle cordova.exec error
      */
-    publish(topic, payload, cordovaParams) {
+     publish(topic, payload, cordovaParams) {
         if (topic in this.subscriptions) {           
             this.subscriptions[topic].forEach(sub => {
             // Invoke the Web subscriptions
@@ -57,15 +74,9 @@ class MessagingCenter {
             });
         }
         if (cordovaParams && !cordovaParams.preventCordovaExec) {
-            // Calls cordova plugin to invoke platform-specific subscriptions
-            cordova.exec(cordovaParams.onSuccess, cordovaParams.onError, SERVICE_NAME, "publish", [topic, payload]);
-       
-            // Electron-specific handling
-            if(window.cordova.platformId === "electron") {
-                window.electronMessagigCenter.invoke({topic, payload});
-            }
+            // Calls web subscription
+            ipcMain.invoke(SERVICE_NAME, {topic, payload})
         }
-
     }
 }
 

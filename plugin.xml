@@ -54,5 +54,11 @@
 
   </platform>
 
+  <platform name="electron">
+
+    <framework src="src/electron"/>
+    
+  </platform>
+
 
 </plugin>
